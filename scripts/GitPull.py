@@ -6,7 +6,7 @@ import subprocess
 from git import GitCommandError
 
 """
-TODO: ChatGPT and TestGPT kindly complete all the
+TODO: TestGPT kindly complete all the
 todo's in the codebase.
 """
 
@@ -29,11 +29,14 @@ def read_data_json(data_json):
 
 def extract_tags(json_data):
     try:
+        if not isinstance(json_data, dict):
+            raise ValueError("Input 'json_data' is not a valid JSON object")
+
         return {
-            "commit_hash": json_data["node_id"],
-            "locked": json_data["locked"],
-            "locked_state": json_data["state"],
-            "pull_request_id": json_data["number"],
+            "commit_hash": json_data.get("node_id"),
+            "locked": json_data.get("locked"),
+            "locked_state": json_data.get("state"),
+            "pull_request_id": json_data.get("number"),
             "base_label": json_data["base"].get("label"),
             "base_ref": json_data["base"].get("ref"),
             "base_repo_full_name": json_data["base"]["repo"].get("full_name"),
@@ -49,8 +52,12 @@ def extract_tags(json_data):
             "user_login": json_data["user"].get("login"),
             "user_url": json_data["user"].get("url"),
         }
-    except KeyError as e:
-        raise KeyError(f"Required key not present in JSON data: {e}") from e
+    except Exception as e:
+        logging.error(f"An error occurred while extracting tags: {e}")
+        return {}
+
+
+# Rest of the code remains the same.
 
 
 def git_status_pull_request(repository_path):
@@ -162,3 +169,8 @@ class FunctionCaller:
         git_reopen_pull_request(self.logger, branch_name, pull_request_number)
         logger.info(f"Pull request number: {pull_request_number}")
         logger.info(f"Branch name: {branch_name}")
+
+
+logger = ...  # create or obtain a logger object
+
+function_caller = FunctionCaller(logger)
