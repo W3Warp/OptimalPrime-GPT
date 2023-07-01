@@ -159,3 +159,6 @@ openai/
 
 # news
 CURRENT_BULLETIN.md
+scripts/incomplete.json
+scripts/temp.json
+scripts/empty_input.json
