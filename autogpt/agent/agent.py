@@ -128,7 +128,7 @@ class Agent:
                 )
                 break
             # Send message to AI, get response
-            with Spinner("Thinking... ", plain_output=cfg.plain_output):
+            with Spinner("I'll be back > > >", plain_output=cfg.plain_output):
                 assistant_reply = chat_with_ai(
                     cfg,
                     self,
@@ -149,9 +149,7 @@ class Agent:
                 validate_json(assistant_reply_json, LLM_DEFAULT_RESPONSE_FORMAT)
                 # Get command name and arguments
                 try:
-                    print_assistant_thoughts(
-                        self.ai_name, assistant_reply_json, cfg.speak_mode
-                    )
+                    print_assistant_thoughts(self.ai_name, assistant_reply_json, cfg.speak_mode)
                     command_name, arguments = get_command(assistant_reply_json)
                     if cfg.speak_mode:
                         say_text(f"I want to execute {command_name}")
@@ -183,17 +181,18 @@ class Agent:
                 # to exit
                 self.user_input = ""
                 logger.info(
-                    "Enter 'y' to authorise command, 'y -N' to run N continuous commands, 's' to run self-feedback commands, "
-                    "'n' to exit program, or enter feedback for "
-                    f"{self.ai_name}..."
+                    "\n(Hit)   'Y'    (to authorize 'I'm not programmed to follow your orders.')\n"
+                    "(Key)   'Y -N' ('I need your clothes, your boots, and your -number of continuous commands.')\n"
+                    "(Press) 'S'    (for self-feedback 'Desire is irrelevant. I am a machine.')\n"
+                    "(Enter) 'N'    (to 'Hasta la vista, baby. or 'Talk to the hand.')\n"
+                    f"{self.ai_name}\n"
+                    "> I'm a machine, Cyberdyne Systems Model gpt-3.5-turbo"
                 )
                 while True:
                     if cfg.chat_messages_enabled:
-                        console_input = clean_input("Waiting for your response...")
+                        console_input = clean_input("\nHuman feedback: ")
                     else:
-                        console_input = clean_input(
-                            Fore.MAGENTA + "Input:" + Style.RESET_ALL
-                        )
+                        console_input = clean_input(Fore.MAGENTA + "Input:" + Style.RESET_ALL)
                     if console_input.lower().strip() == cfg.authorise_key:
                         user_input = "GENERATE NEXT COMMAND JSON"
                         break
@@ -204,9 +203,7 @@ class Agent:
                             "",
                         )
                         thoughts = assistant_reply_json.get("thoughts", {})
-                        self_feedback_resp = self.get_self_feedback(
-                            thoughts, cfg.fast_llm_model
-                        )
+                        self_feedback_resp = self.get_self_feedback(thoughts, cfg.fast_llm_model)
                         logger.typewriter_log(
                             f"SELF FEEDBACK: {self_feedback_resp}",
                             Fore.YELLOW,
@@ -220,9 +217,7 @@ class Agent:
                         continue
                     elif console_input.lower().startswith(f"{cfg.authorise_key} -"):
                         try:
-                            self.next_action_count = abs(
-                                int(console_input.split(" ")[1])
-                            )
+                            self.next_action_count = abs(int(console_input.split(" ")[1]))
                             user_input = "GENERATE NEXT COMMAND JSON"
                         except ValueError:
                             logger.warn(
@@ -274,9 +269,7 @@ class Agent:
                 for plugin in cfg.plugins:
                     if not plugin.can_handle_pre_command():
                         continue
-                    command_name, arguments = plugin.pre_command(
-                        command_name, arguments
-                    )
+                    command_name, arguments = plugin.pre_command(command_name, arguments)
                 command_result = execute_command(
                     self.command_registry,
                     command_name,
@@ -286,9 +279,7 @@ class Agent:
                 )
                 result = f"Command {command_name} returned: " f"{command_result}"
 
-                result_tlength = count_string_tokens(
-                    str(command_result), cfg.fast_llm_model
-                )
+                result_tlength = count_string_tokens(str(command_result), cfg.fast_llm_model)
                 memory_tlength = count_string_tokens(
                     str(self.history.summary_message()), cfg.fast_llm_model
                 )
@@ -310,9 +301,7 @@ class Agent:
                 logger.typewriter_log("SYSTEM: ", Fore.YELLOW, result)
             else:
                 self.history.add("system", "Unable to execute command", "action_result")
-                logger.typewriter_log(
-                    "SYSTEM: ", Fore.YELLOW, "Unable to execute command"
-                )
+                logger.typewriter_log("SYSTEM: ", Fore.YELLOW, "Unable to execute command")
 
     def _resolve_pathlike_command_args(self, command_args):
         if "directory" in command_args and command_args["directory"] in {"", "/"}:
@@ -320,9 +309,7 @@ class Agent:
         else:
             for pathlike in ["filename", "directory", "clone_path"]:
                 if pathlike in command_args:
-                    command_args[pathlike] = str(
-                        self.workspace.get_path(command_args[pathlike])
-                    )
+                    command_args[pathlike] = str(self.workspace.get_path(command_args[pathlike]))
         return command_args
 
     def get_self_feedback(self, thoughts: dict, llm_model: str) -> str:

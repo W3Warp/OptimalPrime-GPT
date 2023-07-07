@@ -51,9 +51,7 @@ class Config(metaclass=Singleton):
             self.allow_commands = []
 
         self.ai_settings_file = os.getenv("AI_SETTINGS_FILE", "ai_settings.yaml")
-        self.prompt_settings_file = os.getenv(
-            "PROMPT_SETTINGS_FILE", "prompt_settings.yaml"
-        )
+        self.prompt_settings_file = os.getenv("PROMPT_SETTINGS_FILE", "prompt_settings.yaml")
         self.fast_llm_model = os.getenv("FAST_LLM_MODEL", "gpt-3.5-turbo")
         self.smart_llm_model = os.getenv("SMART_LLM_MODEL", "gpt-4")
         self.embedding_model = os.getenv("EMBEDDING_MODEL", "text-embedding-ada-002")
@@ -66,12 +64,8 @@ class Config(metaclass=Singleton):
         self.openai_organization = os.getenv("OPENAI_ORGANIZATION")
         self.temperature = float(os.getenv("TEMPERATURE", "0"))
         self.use_azure = os.getenv("USE_AZURE") == "True"
-        self.execute_local_commands = (
-            os.getenv("EXECUTE_LOCAL_COMMANDS", "False") == "True"
-        )
-        self.restrict_to_workspace = (
-            os.getenv("RESTRICT_TO_WORKSPACE", "True") == "True"
-        )
+        self.execute_local_commands = os.getenv("EXECUTE_LOCAL_COMMANDS", "False") == "True"
+        self.restrict_to_workspace = os.getenv("RESTRICT_TO_WORKSPACE", "True") == "True"
 
         if self.use_azure:
             self.load_azure_config()
@@ -106,9 +100,7 @@ class Config(metaclass=Singleton):
         self.huggingface_image_model = os.getenv(
             "HUGGINGFACE_IMAGE_MODEL", "CompVis/stable-diffusion-v1-4"
         )
-        self.huggingface_audio_to_text_model = os.getenv(
-            "HUGGINGFACE_AUDIO_TO_TEXT_MODEL"
-        )
+        self.huggingface_audio_to_text_model = os.getenv("HUGGINGFACE_AUDIO_TO_TEXT_MODEL")
         self.sd_webui_url = os.getenv("SD_WEBUI_URL", "http://localhost:7860")
         self.sd_webui_auth = os.getenv("SD_WEBUI_AUTH")
 
@@ -191,9 +183,7 @@ class Config(metaclass=Singleton):
             config_params = yaml.load(file, Loader=yaml.FullLoader) or {}
         self.openai_api_type = config_params.get("azure_api_type") or "azure"
         self.openai_api_base = config_params.get("azure_api_base") or ""
-        self.openai_api_version = (
-            config_params.get("azure_api_version") or "2023-03-15-preview"
-        )
+        self.openai_api_version = config_params.get("azure_api_version") or "2023-03-15-preview"
         self.azure_model_to_deployment_id_map = config_params.get("azure_model_map", {})
 
     def set_continuous_mode(self, value: bool) -> None:

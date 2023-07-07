@@ -60,9 +60,7 @@ class BaseOpenAIPlugin(AutoGPTPluginTemplate):
             bool: True if the plugin can handle the on_planning method."""
         return False
 
-    def on_planning(
-        self, prompt: PromptGenerator, messages: List[Message]
-    ) -> Optional[str]:
+    def on_planning(self, prompt: PromptGenerator, messages: List[Message]) -> Optional[str]:
         """This method is called before the planning chat completion is done.
         Args:
             prompt (PromptGenerator): The prompt generator.

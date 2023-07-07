@@ -149,14 +149,10 @@ def chat_with_ai(
     for i, plugin in enumerate(config.plugins):
         if not plugin.can_handle_on_planning():
             continue
-        plugin_response = plugin.on_planning(
-            agent.config.prompt_generator, message_sequence.raw()
-        )
+        plugin_response = plugin.on_planning(agent.config.prompt_generator, message_sequence.raw())
         if not plugin_response or plugin_response == "":
             continue
-        tokens_to_add = count_message_tokens(
-            [Message("system", plugin_response)], model
-        )
+        tokens_to_add = count_message_tokens([Message("system", plugin_response)], model)
         if current_tokens_used + tokens_to_add > send_token_limit:
             logger.debug(f"Plugin response too long, skipping: {plugin_response}")
             logger.debug(f"Plugins remaining at stop: {plugin_count - i}")
