@@ -1,3 +1,4 @@
+# sourcery skip: docstrings-for-modules
 import json
 import signal
 import sys
@@ -67,7 +68,7 @@ class Agent:
         triggering_prompt: str,
         workspace_directory: str | Path,
         config: Config,
-    ):
+    ):  # sourcery skip: docstrings-for-functions
         self.ai_name = ai_name
         self.memory = memory
         self.history = MessageHistory(self)
@@ -84,7 +85,7 @@ class Agent:
         self.smart_token_limit = OPEN_AI_CHAT_MODELS.get(config.smart_llm).max_tokens
 
     def start_interaction_loop(self):
-        # Avoid circular imports
+        # TODO: Fix Sourcery - Functions should be less than 40 lines, Avoid circular imports
         from autogpt.app import execute_command, get_command
 
         # Interaction Loop
@@ -141,9 +142,7 @@ class Agent:
                 )
 
             try:
-                assistant_reply_json = extract_json_from_response(
-                    assistant_reply.content
-                )
+                assistant_reply_json = extract_json_from_response(assistant_reply.content)
                 validate_json(assistant_reply_json, self.config)
             except json.JSONDecodeError as e:
                 logger.error(f"Exception while validating assistant reply JSON: {e}")
@@ -158,9 +157,7 @@ class Agent:
             if assistant_reply_json != {}:
                 # Get command name and arguments
                 try:
-                    print_assistant_thoughts(
-                        self.ai_name, assistant_reply_json, self.config
-                    )
+                    print_assistant_thoughts(self.ai_name, assistant_reply_json, self.config)
                     command_name, arguments = get_command(
                         assistant_reply_json, assistant_reply, self.config
                     )
@@ -194,19 +191,18 @@ class Agent:
                 # to exit
                 self.user_input = ""
                 logger.info(
-                    f"Enter '{self.config.authorise_key}' to authorise command, "
-                    f"'{self.config.authorise_key} -N' to run N continuous commands, "
-                    f"'{self.config.exit_key}' to exit program, or enter feedback for "
-                    f"{self.ai_name}..."
+                    f"'{self.config.authorise_key}' to authorize 'I'm not programmed to follow your orders.'\n"
+                    f"'{self.config.authorise_key} -N' 'I need your clothes, your boots, and your -Number of continuous commands.')\n"
+                    f"'{self.config.exit_key}' to 'Hasta la vista, baby. or 'Talk to the hand.'\n"
+                    f"{self.ai_name}\n"
+                    "> I'm a machine, Cyberdyne Systems Model gpt-4"
                 )
                 while True:
                     if self.config.chat_messages_enabled:
-                        console_input = clean_input(
-                            self.config, "Waiting for your response..."
-                        )
+                        console_input = clean_input(self.config, "Waiting for your response...")
                     else:
                         console_input = clean_input(
-                            self.config, Fore.MAGENTA + "Input:" + Style.RESET_ALL
+                            self.config, f"{Fore.MAGENTA}Input:{Style.RESET_ALL}"
                         )
                     if console_input.lower().strip() == self.config.authorise_key:
                         user_input = "GENERATE NEXT COMMAND JSON"
@@ -214,9 +210,7 @@ class Agent:
                     elif console_input.lower().strip() == "":
                         logger.warn("Invalid input format.")
                         continue
-                    elif console_input.lower().startswith(
-                        f"{self.config.authorise_key} -"
-                    ):
+                    elif console_input.lower().startswith(f"{self.config.authorise_key} -"):
                         try:
                             self.next_action_count = abs(int(console_input.split(" ")[1]))
                             user_input = "GENERATE NEXT COMMAND JSON"
@@ -276,9 +270,7 @@ class Agent:
                 )
                 result = f"Command {command_name} returned: " f"{command_result}"
 
-                result_tlength = count_string_tokens(
-                    str(command_result), self.config.smart_llm
-                )
+                result_tlength = count_string_tokens(str(command_result), self.config.smart_llm)
                 memory_tlength = count_string_tokens(
                     str(self.history.summary_message()), self.config.smart_llm
                 )
